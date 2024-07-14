@@ -1,0 +1,56 @@
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using "Save & Run All" 
+# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
+# Import
+import pandas as pd
+import numpy as np
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+import nltk
+nltk.download('stopwords')
+print(stopwords.words('english'))
+# Loading Data
+df = pd.read_csv('/kaggle/input/fake-news/news.csv')
+df
+df.head()
+df.info()
+df.describe()
+df.isnull()
+# Missing Value
+df.isnull().sum()
+# how many rows & columns are in the data
+df.shape
+df.columns
+X = df.drop(columns = 'label')
+Y = df['label']
+# Stemming
+stem = PorterStemmer()
+def stemming(text):
+    stem_text = re.sub('[^a-zA-Z]',' ',text)
+    stem_text = stem_text.lower()
+    stem_text = stem_text.split()
+    stem_text = [stem.stem(word) for word in stem_text if not word in stopwords.words('english')] 
+    stem_text = ' '.join(stem_text)
+    return stem_text
+x = df['text'].values
+y = df['label'].values
+Xtrain, Xtest,Ytrain,Ytest = train_test_split(X,y,test_size=0.2,random_state=2)
